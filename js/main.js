@@ -39,7 +39,11 @@ let currentWizardStep = 1;
 let breathingPlayActive = false;
 
 /**
- * Initializes DOM element selectors.
+ * Queries and caches all key DOM elements into a centralized reference object.
+ * Centralizing DOM element selections improves execution speed by avoiding repeated query lookups
+ * and facilitates runtime null-checks for defensive stability across different screens.
+ * 
+ * @returns {void}
  */
 function initDomSelectors() {
   DOM = {
@@ -118,7 +122,13 @@ function initDomSelectors() {
 }
 
 /**
- * Binds UI Event Listeners.
+ * Attaches event listeners to all interactive buttons, select fields, and forms.
+ * Employs defensive null-checks for every DOM element selector before attaching the listener
+ * to prevent startup crashes if components are loaded or structured dynamically.
+ * Coordinates page routing, provider choice toggling, AI model metadata fetches,
+ * journal submissions, coping strategies checklist interaction, and report exports.
+ * 
+ * @returns {void}
  */
 function bindEventListeners() {
   const state = getState();
@@ -717,7 +727,11 @@ AURA'S ENCOURAGEMENT FOR TODAY:
 }
 
 /**
- * RESTORES session settings from local/session storage if saved.
+ * Restores and re-hydrates session settings from local or session storage if saved.
+ * Updates form values, state variables, and toggles the visibility state of custom
+ * endpoint groups depending on whether Gemini or an OpenAI-compatible provider was active.
+ * 
+ * @returns {void}
  */
 function restoreStoredConfig() {
   loadConfig();
@@ -748,12 +762,21 @@ function restoreStoredConfig() {
   }
 }
 
-// Startup Initialization
+/**
+ * Core Application Initialization Handler.
+ * Sets up selectors, binds event listeners, restores cached user config,
+ * and mounts the onboarding welcome screen as the initial viewport.
+ */
 window.addEventListener("DOMContentLoaded", () => {
+  // Initialize and query DOM nodes
   initDomSelectors();
+  
+  // Attach safe click, change, and submit event listeners
   bindEventListeners();
+  
+  // Restore any persisted configuration from previous sessions
   restoreStoredConfig();
   
-  // Show welcome screen by default
+  // Default to showing the welcome onboarding landing screen
   showScreen(DOM.welcomeScreen);
 });
