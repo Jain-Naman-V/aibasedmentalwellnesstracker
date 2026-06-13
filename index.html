@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MindCare AI — Empathetic Student Mental Wellness Tracker</title>
   <meta name="description" content="A Generative AI digital companion for students during board exams and competitive test preparation. Track moods, analyze stress triggers, and practice custom mindfulness.">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src https://generativelanguage.googleapis.com https://*.openai.com https://*; font-src https://fonts.googleapis.com https://fonts.gstatic.com; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; img-src 'self' data:;">
   
   <!-- Calming Fonts from Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -123,7 +124,7 @@
                 </div>
               </div>
 
-              <span id="model-fetch-status" class="form-help-desc" style="display: block; margin-bottom: var(--spacing-md); font-weight: 500;"></span>
+              <span id="model-fetch-status" class="form-help-desc" role="status" aria-live="polite" style="display: block; margin-bottom: var(--spacing-md); font-weight: 500;"></span>
 
               <label class="checkbox-option-wrapper" for="save-key-persistent">
                 <input type="checkbox" id="save-key-persistent">
@@ -206,7 +207,7 @@
               
               <div class="mood-grid">
                 <label class="mood-btn-card">
-                  <input type="radio" name="mood" value="great" required>
+                  <input type="radio" name="mood" value="great" required aria-label="Mood: Great">
                   <div class="mood-btn-card-content">
                     <svg class="mood-svg-icon" viewBox="0 0 24 24" aria-hidden="true">
                       <circle cx="12" cy="12" r="10"></circle>
@@ -219,7 +220,7 @@
                 </label>
 
                 <label class="mood-btn-card">
-                  <input type="radio" name="mood" value="good">
+                  <input type="radio" name="mood" value="good" aria-label="Mood: Good">
                   <div class="mood-btn-card-content">
                     <svg class="mood-svg-icon" viewBox="0 0 24 24" aria-hidden="true">
                       <circle cx="12" cy="12" r="10"></circle>
@@ -232,7 +233,7 @@
                 </label>
 
                 <label class="mood-btn-card">
-                  <input type="radio" name="mood" value="okay">
+                  <input type="radio" name="mood" value="okay" aria-label="Mood: Okay">
                   <div class="mood-btn-card-content">
                     <svg class="mood-svg-icon" viewBox="0 0 24 24" aria-hidden="true">
                       <circle cx="12" cy="12" r="10"></circle>
@@ -245,7 +246,7 @@
                 </label>
 
                 <label class="mood-btn-card">
-                  <input type="radio" name="mood" value="stressed">
+                  <input type="radio" name="mood" value="stressed" aria-label="Mood: Stressed">
                   <div class="mood-btn-card-content">
                     <svg class="mood-svg-icon" viewBox="0 0 24 24" aria-hidden="true">
                       <circle cx="12" cy="12" r="10"></circle>
@@ -258,7 +259,7 @@
                 </label>
 
                 <label class="mood-btn-card">
-                  <input type="radio" name="mood" value="overwhelmed">
+                  <input type="radio" name="mood" value="overwhelmed" aria-label="Mood: Overwhelmed">
                   <div class="mood-btn-card-content">
                     <svg class="mood-svg-icon" viewBox="0 0 24 24" aria-hidden="true">
                       <circle cx="12" cy="12" r="10"></circle>
@@ -276,7 +277,7 @@
               <label for="journal-entry">Write about your day (study progress, pressures, self-doubt, or general thoughts):</label>
               <div class="journal-textarea-container">
                 <textarea id="journal-entry" class="form-textarea" placeholder="Today was tough. I feel like I'm falling behind on my NEET revision mock tests. I got anxious reading about other people's study hours..." required maxlength="2000" aria-describedby="error-journal-entry"></textarea>
-                <div class="textarea-char-counter error" id="char-counter">0 characters</div>
+                <div class="textarea-char-counter error" id="char-counter" aria-live="polite">0 characters</div>
               </div>
               <span id="error-journal-entry" class="error-text-msg" role="alert">Please write at least 50 characters to start analysis.</span>
             </div>
@@ -285,6 +286,13 @@
               <button type="submit" class="btn btn-primary" style="margin-left: auto;">Analyze Journal & Mood</button>
             </div>
           </form>
+
+          <!-- Journal History for Emotional Pattern Tracking -->
+          <div class="journal-history-section" style="margin-top: var(--spacing-xl); padding-top: var(--spacing-lg); border-top: 1px solid var(--color-border);">
+            <h3 style="font-size: 1rem; margin-bottom: var(--spacing-sm); color: var(--color-text-secondary);">📊 Your Emotional Patterns</h3>
+            <p style="font-size: 0.85rem; color: var(--color-text-muted); margin-bottom: var(--spacing-md);">Trends from your recent journal entries help track progress over time.</p>
+            <div id="journal-history-container" aria-label="Previous journal entry summaries"></div>
+          </div>
         </div>
       </div>
     </section>
@@ -345,9 +353,9 @@
             <h4>Empathetic Safeguard Reminder</h4>
             <p>We notice you are carrying an extremely heavy mental load. Please remember you are not alone in this journey. If you feel overwhelmed, consider connecting with a wellness counselor, parent, or professional support hotlines:</p>
             <div class="safeguard-links">
-              <a href="tel:14416" target="_blank">Tele-MANAS Student Support (India): Dial 14416</a>
-              <a href="https://www.vandrevalafoundation.com" target="_blank">Vandrevala Foundation Helpline</a>
-              <a href="tel:02227546669" target="_blank">Call 022-27546669</a>
+              <a href="tel:14416" target="_blank" rel="noopener noreferrer" aria-label="Call Tele-MANAS Student Support India at 14416">Tele-MANAS Student Support (India): Dial 14416</a>
+              <a href="https://www.vandrevalafoundation.com" target="_blank" rel="noopener noreferrer" aria-label="Visit Vandrevala Foundation Helpline website">Vandrevala Foundation Helpline</a>
+              <a href="tel:02227546669" target="_blank" rel="noopener noreferrer" aria-label="Call helpline at 022-27546669">Call 022-27546669</a>
             </div>
           </div>
         </div>
@@ -414,8 +422,8 @@
                 <div class="breathing-exercise-sphere" id="dash-breathing-sphere">
                   <div class="breathing-sphere-inner">Breathe</div>
                 </div>
-                <div class="breathing-timer" id="dash-breathing-timer">0s</div>
-                <div class="breathing-guidance-instruction" id="dash-breathing-instruction">Click Start to begin 4-7-8 breathing.</div>
+                <div class="breathing-timer" id="dash-breathing-timer" role="timer" aria-live="polite">0s</div>
+                <div class="breathing-guidance-instruction" id="dash-breathing-instruction" aria-live="assertive">Click Start to begin 4-7-8 breathing.</div>
                 
                 <button type="button" class="btn btn-secondary" id="btn-toggle-breathing">
                   Start Exercise

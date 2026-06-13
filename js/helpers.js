@@ -26,6 +26,20 @@ export function validateJournal(text) {
 }
 
 /**
+ * Sanitizes journal text before sending to AI endpoint.
+ * Strips control characters (except newlines/tabs) and collapses excessive whitespace.
+ * @param {string} text
+ * @returns {string} Cleaned text safe for API transmission
+ */
+export function sanitizeJournalInput(text) {
+  if (typeof text !== "string") return "";
+  // Remove control chars except newline (\n) and tab (\t)
+  const stripped = text.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, "");
+  // Collapse runs of 3+ newlines into 2, and excessive spaces into 1
+  return stripped.replace(/\n{3,}/g, "\n\n").replace(/ {2,}/g, " ").trim();
+}
+
+/**
  * Escapes characters that could cause HTML injection or XSS.
  * @param {string} str 
  * @returns {string} Safe escaped string

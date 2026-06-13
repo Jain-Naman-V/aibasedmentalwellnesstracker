@@ -14,6 +14,17 @@ export const EXAMS = [
   { id: "other", name: "Other Competitive Exam" }
 ];
 
+/**
+ * Resolves exam ID to human-readable name.
+ * Uses Map for O(1) lookup instead of repeated Array.find().
+ * @param {string} examId
+ * @returns {string} Human-readable exam name
+ */
+const EXAM_NAME_MAP = new Map(EXAMS.map(e => [e.id, e.name]));
+export function getExamName(examId) {
+  return EXAM_NAME_MAP.get(examId) || examId;
+}
+
 export const DEFAULT_ENDPOINTS = {
   gemini: "https://generativelanguage.googleapis.com",
   openai: "https://api.openai.com/v1"
