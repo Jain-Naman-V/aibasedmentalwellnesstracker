@@ -1,0 +1,18 @@
+{
+  "name": "mindcare-ai",
+  "version": "1.0.0",
+  "description": "MindCare AI - Empathetic Student Mental Wellness Tracker",
+  "type": "module",
+  "scripts": {
+    "test": "node test.js"
+  },
+  "keywords": [
+    "mental-health",
+    "wellness",
+    "students",
+    "gemini",
+    "ai"
+  ],
+  "author": "Antigravity",
+  "license": "MIT"
+}

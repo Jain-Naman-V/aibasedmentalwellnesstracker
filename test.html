@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MindCare AI — Visual Unit Test Runner</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;600;700;900&family=Space+Mono&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --color-bg: #faf8f5;
+      --color-text-primary: #2b2347;
+      --color-text-secondary: #5e548e;
+      --color-indigo: #6b66e5;
+      --color-indigo-light: #f0efff;
+      --color-sage: #52796f;
+      --color-sage-light: #e2efe0;
+      --color-success: #4ade80;
+      --color-danger: #f87171;
+      --color-border: rgba(94, 84, 142, 0.12);
+      
+      --font-heading: 'Outfit', sans-serif;
+      --font-body: 'Inter', sans-serif;
+      --font-mono: 'Space Mono', monospace;
+    }
+
+    body {
+      font-family: var(--font-body);
+      background-color: var(--color-bg);
+      color: var(--color-text-primary);
+      margin: 0;
+      padding: 2rem;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .test-container {
+      width: 100%;
+      max-width: 800px;
+      background-color: #ffffff;
+      border: 1px solid var(--color-border);
+      border-radius: 16px;
+      box-shadow: 0 8px 30px rgba(94, 84, 142, 0.08);
+      overflow: hidden;
+    }
+
+    .test-header {
+      padding: 1.5rem 2rem;
+      border-bottom: 1px solid var(--color-border);
+      background: linear-gradient(to right, rgba(107, 102, 229, 0.03), rgba(82, 121, 111, 0.03));
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .test-header h1 {
+      font-family: var(--font-heading);
+      font-size: 1.75rem;
+      margin: 0;
+    }
+
+    .test-summary-badge {
+      font-family: var(--font-heading);
+      font-weight: 600;
+      padding: 0.4rem 1rem;
+      border-radius: 9999px;
+      font-size: 0.9rem;
+    }
+
+    .test-summary-badge.all-passed {
+      background-color: var(--color-sage-light);
+      color: var(--color-sage);
+    }
+
+    .test-summary-badge.has-failed {
+      background-color: #fdd8d8;
+      color: #bf2121;
+    }
+
+    .test-results-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .test-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      border-bottom: 1px solid var(--color-border);
+      transition: background-color 0.2s ease;
+    }
+
+    .test-row:last-child {
+      border-bottom: none;
+    }
+
+    .test-row:hover {
+      background-color: #fafafa;
+    }
+
+    .test-meta {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .test-status-icon {
+      font-size: 1.25rem;
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+    }
+
+    .test-status-icon.pass {
+      color: var(--color-success);
+    }
+
+    .test-status-icon.fail {
+      color: var(--color-danger);
+    }
+
+    .test-name {
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    .test-time {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--color-text-secondary);
+    }
+
+    .test-error-log {
+      background-color: #1a162b;
+      color: var(--color-danger);
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      padding: 0.75rem 1.5rem;
+      margin: 0.5rem 2rem;
+      border-radius: 8px;
+      white-space: pre-wrap;
+    }
+
+    .footer {
+      margin-top: 2rem;
+      text-align: center;
+      font-size: 0.85rem;
+      color: var(--color-text-secondary);
+    }
+
+    .btn-run {
+      font-family: var(--font-heading);
+      background-color: var(--color-indigo);
+      color: #ffffff;
+      font-weight: 600;
+      padding: 0.5rem 1.25rem;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(107, 102, 229, 0.2);
+      transition: all 0.2s ease;
+    }
+
+    .btn-run:hover {
+      background-color: #5550c7;
+      transform: translateY(-1px);
+    }
+  </style>
+</head>
+<body>
+  <div class="test-container">
+    <div class="test-header">
+      <div>
+        <h1>Visual Unit Test Suite</h1>
+        <p style="margin: 0.25rem 0 0 0; font-size: 0.85rem; color: var(--color-text-secondary);">
+          Tests functions in <code>js/helpers.js</code> inside active DOM environment.
+        </p>
+      </div>
+      <div id="test-summary" class="test-summary-badge all-passed">Running...</div>
+    </div>
+
+    <ul class="test-results-list" id="test-results-body">
+      <!-- Dynamic test assertions rows will append here -->
+    </ul>
+  </div>
+
+  <div style="margin-top: 1.5rem;">
+    <button class="btn-run" id="btn-re-run">Run Tests Again</button>
+  </div>
+
+  <div class="footer">
+    MindCare AI • Code Quality & Testing Audit
+  </div>
+
+  <!-- Test Script using browser ESM -->
+  <script type="module">
+    import { 
+      validateUrl, 
+      validateJournal, 
+      escapeHtml, 
+      extractJsonString, 
+      parseInlineMarkdown, 
+      parseMarkdownToElements 
+    } from "./js/helpers.js";
+
+    const resultsBody = document.getElementById("test-results-body");
+    const summaryBadge = document.getElementById("test-summary");
+    const runBtn = document.getElementById("btn-re-run");
+
+    let totalTests = 0;
+    let failedTests = 0;
+
+    function assert(condition, message) {
+      if (!condition) {
+        throw new Error(message || "Assertion failed");
+      }
+    }
+
+    assert.strictEqual = function(actual, expected, message) {
+      if (actual !== expected) {
+        throw new Error(message || `Expected "${expected}" but got "${actual}"`);
+      }
+    };
+
+    function addTestResult(name, fn) {
+      totalTests++;
+      const start = performance.now();
+      
+      const li = document.createElement("li");
+      li.className = "test-row";
+      
+      const meta = document.createElement("div");
+      meta.className = "test-meta";
+      
+      const icon = document.createElement("span");
+      
+      const textSpan = document.createElement("span");
+      textSpan.className = "test-name";
+      textSpan.textContent = name;
+      
+      meta.appendChild(icon);
+      meta.appendChild(textSpan);
+      
+      const durationSpan = document.createElement("span");
+      durationSpan.className = "test-time";
+      
+      li.appendChild(meta);
+      li.appendChild(durationSpan);
+      resultsBody.appendChild(li);
+
+      try {
+        fn();
+        const duration = (performance.now() - start).toFixed(2);
+        icon.className = "test-status-icon pass";
+        icon.textContent = "✓";
+        durationSpan.textContent = `${duration} ms`;
+      } catch (err) {
+        failedTests++;
+        const duration = (performance.now() - start).toFixed(2);
+        icon.className = "test-status-icon fail";
+        icon.textContent = "✗";
+        durationSpan.textContent = `${duration} ms`;
+        
+        // Add log error window
+        const errorDiv = document.createElement("div");
+        errorDiv.className = "test-error-log";
+        errorDiv.textContent = `Assertion Error: ${err.message}\n${err.stack || ""}`;
+        resultsBody.appendChild(errorDiv);
+      }
+    }
+
+    function runTests() {
+      resultsBody.innerHTML = "";
+      totalTests = 0;
+      failedTests = 0;
+      summaryBadge.className = "test-summary-badge";
+      summaryBadge.textContent = "Running...";
+      
+      // 1. validateUrl tests
+      addTestResult("URL Validator: accepts valid OpenAI-compatible / Gemini schemas", () => {
+        assert.strictEqual(validateUrl("https://api.openai.com/v1"), true);
+        assert.strictEqual(validateUrl("http://localhost:11434"), true);
+        assert.strictEqual(validateUrl("ftp://api.openai.com"), false);
+        assert.strictEqual(validateUrl("api.openai.com"), false);
+        assert.strictEqual(validateUrl(""), false);
+      });
+
+      // 2. validateJournal tests
+      addTestResult("Journal Validator: rejects entries under 50 chars, permits longer logs", () => {
+        const shortText = "I feel stressed about my board exams today.";
+        const boundaryText = "I feel stressed about my board exams today. I need to write at least fifty characters.";
+        const longText = "Preparing for GATE is taking a huge toll on my sleep. I am only studying 12 hours a day and neglecting my wellness. I hope this tracker can give me some coping mechanism.";
+        
+        assert.strictEqual(validateJournal(shortText), false);
+        assert.strictEqual(validateJournal(boundaryText), true);
+        assert.strictEqual(validateJournal(longText), true);
+        assert.strictEqual(validateJournal(""), false);
+      });
+
+      // 3. escapeHtml tests
+      addTestResult("HTML Escaper: neutralizes scripting tags to prevent XSS vulnerability", () => {
+        const dangerous = '<script>alert("hack");</' + 'script> & "hello"';
+        const expected = '&lt;script&gt;alert(&quot;hack&quot;);&lt;/script&gt; &amp; &quot;hello&quot;';
+        assert.strictEqual(escapeHtml(dangerous), expected);
+      });
+
+      // 4. extractJsonString tests
+      addTestResult("JSON Extractor: retrieves raw json object text from LLM markdown backticks", () => {
+        const rawWithBackticks = "```json\n{\n  \"stressScore\": 45\n}\n```";
+        const rawBasicBackticks = "```\n{\n  \"stressScore\": 45\n}\n```";
+        const rawNormal = "{\n  \"stressScore\": 45\n}";
+
+        assert.strictEqual(extractJsonString(rawWithBackticks), "{\n  \"stressScore\": 45\n}");
+        assert.strictEqual(extractJsonString(rawBasicBackticks), "{\n  \"stressScore\": 45\n}");
+        assert.strictEqual(extractJsonString(rawNormal), "{\n  \"stressScore\": 45\n}");
+      });
+
+      // 5. parseInlineMarkdown tests
+      addTestResult("Inline Markdown Parser: maps bold and italic formatting to HTML tags securely", () => {
+        const frag = parseInlineMarkdown("This is **bold** text with *italic*");
+        assert(frag instanceof DocumentFragment, "Must return DocumentFragment");
+        assert.strictEqual(frag.childNodes.length, 4, "Should create 4 children nodes");
+        assert.strictEqual(frag.childNodes[0].nodeType, 3); // TextNode
+        assert.strictEqual(frag.childNodes[1].nodeName, "STRONG");
+        assert.strictEqual(frag.childNodes[3].nodeName, "EM");
+      });
+
+      // 6. parseMarkdownToElements tests
+      addTestResult("Block Markdown Parser: parses lists and paragraphs safely using DocumentFragment", () => {
+        const markdown = "Hello student.\n\n- Take a breath\n- Walk outside\n\nHope this helps.";
+        const frag = parseMarkdownToElements(markdown);
+        
+        assert(frag instanceof DocumentFragment, "Must return DocumentFragment");
+        assert.strictEqual(frag.childNodes.length, 3, "Expected 3 block elements");
+        assert.strictEqual(frag.childNodes[0].nodeName, "P");
+        assert.strictEqual(frag.childNodes[1].nodeName, "UL");
+        assert.strictEqual(frag.childNodes[1].childNodes.length, 2, "List must contain 2 items");
+        assert.strictEqual(frag.childNodes[2].nodeName, "P");
+      });
+
+      // 7. defensive input types validation tests
+      addTestResult("Defensive Types: handles null, undefined, and non-string types safely without throwing", () => {
+        assert.strictEqual(validateUrl(null), false);
+        assert.strictEqual(validateUrl(undefined), false);
+        assert.strictEqual(validateUrl(123), false);
+
+        assert.strictEqual(validateJournal(null), false);
+        assert.strictEqual(validateJournal(undefined), false);
+        assert.strictEqual(validateJournal(123), false);
+
+        assert.strictEqual(escapeHtml(null), "");
+        assert.strictEqual(escapeHtml(undefined), "");
+        assert.strictEqual(escapeHtml(123), "");
+
+        assert.strictEqual(extractJsonString(null), "");
+        assert.strictEqual(extractJsonString(undefined), "");
+        assert.strictEqual(extractJsonString(123), "");
+
+        const frag1 = parseInlineMarkdown(null);
+        assert.strictEqual(frag1.childNodes.length, 0);
+
+        const frag2 = parseMarkdownToElements(null);
+        assert.strictEqual(frag2.childNodes.length, 0);
+      });
+
+      // Update Summary
+      if (failedTests === 0) {
+        summaryBadge.textContent = "All Passed";
+        summaryBadge.className = "test-summary-badge all-passed";
+      } else {
+        summaryBadge.textContent = `${failedTests} Failed`;
+        summaryBadge.className = "test-summary-badge has-failed";
+      }
+    }
+
+    runBtn.addEventListener("click", runTests);
+    
+    // Auto run on load
+    runTests();
+  </script>
+</body>
+</html>

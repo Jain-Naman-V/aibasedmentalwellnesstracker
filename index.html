@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MindCare AI — Empathetic Student Mental Wellness Tracker</title>
+  <meta name="description" content="A Generative AI digital companion for students during board exams and competitive test preparation. Track moods, analyze stress triggers, and practice custom mindfulness.">
+  
+  <!-- Calming Fonts from Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;600;700;900&family=Space+Mono&display=swap" rel="stylesheet">
+  
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Ambient Calming Background elements -->
+  <div class="ambient-bg" aria-hidden="true"></div>
+  <div class="bg-orbs" aria-hidden="true">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+
+  <!-- Header / Navigation Bar -->
+  <header class="app-header">
+    <div class="header-container">
+      <a href="#" class="logo" id="logo-link">MindCare <span>AI</span></a>
+      <nav class="nav-links" aria-label="Main Navigation">
+        <a href="#welcome" class="nav-item" id="nav-welcome">Welcome</a>
+        <a href="#configure" class="nav-item" id="nav-config">Configure</a>
+        <a href="#journal" class="nav-item" id="nav-journal">Journal</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Application Container -->
+  <main>
+    <!-- Screen 1: Welcome / Landing Onboarding -->
+    <section id="screen-welcome" class="screen active" aria-labelledby="welcome-heading">
+      <div class="welcome-hero">
+        <span class="welcome-badge">ACADEMIC WELLNESS ENGINES</span>
+        <h1 id="welcome-heading" class="welcome-title">Empathetic support for your <span>Academic Journey</span></h1>
+        <p class="welcome-subtitle">
+          High-stakes competitive exams (NEET, JEE, UPSC, GATE) can be overwhelming. Take a moment to monitor your stress, analyze hidden emotional triggers, and speak with Aura, your empathetic digital companion.
+        </p>
+        <div class="welcome-cta">
+          <button class="btn btn-primary" id="btn-go-config" type="button">
+            Configure Companion
+          </button>
+        </div>
+      </div>
+
+      <!-- Feature Cards Grid -->
+      <div class="welcome-features">
+        <div class="feature-card">
+          <div class="feature-icon-wrapper" aria-hidden="true">📝</div>
+          <h3>Open daily journaling</h3>
+          <p>Express your feelings freely. Our AI analyzes your journals beyond superficial words, identifying underlying stress triggers standard trackers miss.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon-wrapper" aria-hidden="true">🧘</div>
+          <h3>Adaptive mindfulness</h3>
+          <p>Get custom-tailored coping checklists and interactive 4-7-8 breathing exercises adjusted dynamically to match your emotional state.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon-wrapper" aria-hidden="true">💬</div>
+          <h3>Conversational coach</h3>
+          <p>Chat directly with Aura, your always-available wellness companion. Aura retains context of your current target exam and emotional triggers.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Screen 2: Setup / Configuration Wizard -->
+    <section id="screen-config" class="screen" aria-labelledby="config-heading">
+      <div class="card-layout">
+        <div class="card-header">
+          <h2 id="config-heading" class="card-title">Setup Companion & Credentials</h2>
+          <p class="card-subtitle">Tune the wellness engine to match your academic schedule and connection endpoints.</p>
+        </div>
+
+        <div class="card-body">
+          <form id="config-form" novalidate>
+            <!-- Wizard Step Bar -->
+            <div class="steps-progress-bar" role="progressbar" aria-valuemin="1" aria-valuemax="3" aria-valuenow="1" aria-label="Setup step progress">
+              <div class="steps-progress-fill" id="wizard-progress-fill"></div>
+            </div>
+
+            <!-- Wizard Step 1: Endpoint & Credentials -->
+            <div class="wizard-step-section active" data-step="1">
+              <h3 class="sr-only">Step 1: API Setup</h3>
+              <div class="form-group">
+                <label for="api-provider">Generative AI Provider</label>
+                <select id="api-provider" class="form-select" aria-describedby="provider-desc">
+                  <option value="gemini">Google Gemini Developer API (Recommended)</option>
+                  <option value="openai">OpenAI or Compatible Endpoint</option>
+                </select>
+                <span id="provider-desc" class="form-help-desc">Select Gemini to access Google's native multimodal APIs, or choose OpenAI for compatibility with OpenRouter, DeepSeek, or local Ollama.</span>
+              </div>
+
+              <div class="form-group" id="api-base-url-group" style="display: none;">
+                <label for="api-base-url">API Base URL</label>
+                <input type="url" id="api-base-url" class="form-input" placeholder="e.g. https://api.openai.com/v1" aria-describedby="base-url-error">
+                <span id="base-url-error" class="error-text-msg" role="alert">Please enter a valid base URL (must start with http:// or https://)</span>
+              </div>
+
+              <div class="form-group">
+                <label for="api-key">API Authorization Key</label>
+                <input type="password" id="api-key" class="form-input" placeholder="Enter developer key..." aria-describedby="api-key-error">
+                <span id="api-key-error" class="error-text-msg" role="alert">API key is required to make calls.</span>
+              </div>
+
+              <div class="form-group-row">
+                <div class="form-group">
+                  <label for="api-model">Target AI Model</label>
+                  <select id="api-model" class="form-select">
+                    <option value="">-- Click Fetch Models --</option>
+                  </select>
+                </div>
+                <div class="form-group" style="justify-content: flex-end;">
+                  <button type="button" class="btn btn-secondary" id="btn-fetch-models">Fetch Models</button>
+                </div>
+              </div>
+
+              <span id="model-fetch-status" class="form-help-desc" style="display: block; margin-bottom: var(--spacing-md); font-weight: 500;"></span>
+
+              <label class="checkbox-option-wrapper" for="save-key-persistent">
+                <input type="checkbox" id="save-key-persistent">
+                <span>Save API credentials securely on this device (uses obfuscated local storage)</span>
+              </label>
+
+              <div class="wizard-nav-btns">
+                <button type="button" class="btn btn-primary btn-wizard-next" data-next="2">Next Step</button>
+              </div>
+            </div>
+
+            <!-- Wizard Step 2: Academic Profile -->
+            <div class="wizard-step-section" data-step="2">
+              <h3 class="sr-only">Step 2: Academic Profile</h3>
+              <div class="form-group">
+                <label for="student-exam">Target Competitive / Board Exam</label>
+                <select id="student-exam" class="form-select">
+                  <option value="jee">JEE Main / Advanced (Engineering)</option>
+                  <option value="neet">NEET (Medical Entrance)</option>
+                  <option value="upsc">UPSC Civil Services</option>
+                  <option value="gate">GATE (Postgrad Engineering)</option>
+                  <option value="cat">CAT (MBA Entrance)</option>
+                  <option value="cuet">CUET (Undergrad Admissions)</option>
+                  <option value="cbse">CBSE / ICSE Board Exams</option>
+                  <option value="other">Other High-Stakes Exams</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="student-study-hours">Average Daily Study Hours</label>
+                <input type="number" id="student-study-hours" class="form-input" min="1" max="24" value="8" required aria-describedby="hours-error">
+                <span id="hours-error" class="error-text-msg" role="alert">Please enter valid daily study hours (1 to 24).</span>
+              </div>
+
+              <div class="wizard-nav-btns">
+                <button type="button" class="btn btn-outline btn-wizard-prev" data-prev="1">Back</button>
+                <button type="button" class="btn btn-primary btn-wizard-next" data-next="3">Next Step</button>
+              </div>
+            </div>
+
+            <!-- Wizard Step 3: Confirmation -->
+            <div class="wizard-step-section" data-step="3">
+              <h3 style="margin-bottom: var(--spacing-sm);">Step 3: Ready to proceed</h3>
+              <p style="margin-bottom: var(--spacing-lg); color: var(--color-text-secondary);">
+                Your student profile and API parameters are configured. Everything is stored locally on your device for absolute student data privacy. Click save below to start.
+              </p>
+
+              <div class="wizard-nav-btns">
+                <button type="button" class="btn btn-outline btn-wizard-prev" data-prev="2">Back</button>
+                <button type="submit" class="btn btn-primary">Save & Start Track</button>
+              </div>
+            </div>
+          </form>
+        </div>
+        
+        <!-- Danger Reset Actions -->
+        <div style="padding: 0 var(--spacing-xl) var(--spacing-lg) var(--spacing-xl); text-align: right;">
+          <button type="button" class="btn btn-outline" id="btn-reset-config" style="border-color: transparent; color: var(--color-danger);">
+            Wipe Cache & Clear Data
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Screen 3: Journal Logger & Mood Input -->
+    <section id="screen-journal" class="screen" aria-labelledby="journal-heading">
+      <div class="card-layout" style="max-width: 800px;">
+        <div class="card-header">
+          <h2 id="journal-heading" class="card-title">Daily Wellness Journal</h2>
+          <p class="card-subtitle">Log your mood and dump your thoughts. Let's analyze how you're feeling today.</p>
+        </div>
+
+        <div class="card-body">
+          <form id="journal-form" novalidate>
+            <!-- Mood Selector Buttons -->
+            <div class="mood-selector-container">
+              <label style="display: block; font-family: var(--font-heading); font-weight: 600; margin-bottom: var(--spacing-sm); font-size: 0.95rem;">
+                Select your predominant feeling:
+              </label>
+              
+              <div class="mood-grid">
+                <label class="mood-btn-card">
+                  <input type="radio" name="mood" value="great" required>
+                  <div class="mood-btn-card-content">
+                    <svg class="mood-svg-icon" viewBox="0 0 24 24" aria-hidden="true">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <path d="M8 14s1.5 2 4 2 4-2 4-2"></path>
+                      <line x1="9" y1="9" x2="9.01" y2="9"></line>
+                      <line x1="15" y1="9" x2="15.01" y2="9"></line>
+                    </svg>
+                    <span>Great</span>
+                  </div>
+                </label>
+
+                <label class="mood-btn-card">
+                  <input type="radio" name="mood" value="good">
+                  <div class="mood-btn-card-content">
+                    <svg class="mood-svg-icon" viewBox="0 0 24 24" aria-hidden="true">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <path d="M8 15s1.5 1.5 4 1.5 4-1.5 4-1.5"></path>
+                      <line x1="9" y1="9" x2="9.01" y2="9"></line>
+                      <line x1="15" y1="9" x2="15.01" y2="9"></line>
+                    </svg>
+                    <span>Good</span>
+                  </div>
+                </label>
+
+                <label class="mood-btn-card">
+                  <input type="radio" name="mood" value="okay">
+                  <div class="mood-btn-card-content">
+                    <svg class="mood-svg-icon" viewBox="0 0 24 24" aria-hidden="true">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <line x1="8" y1="15" x2="16" y2="15"></line>
+                      <line x1="9" y1="9" x2="9.01" y2="9"></line>
+                      <line x1="15" y1="9" x2="15.01" y2="9"></line>
+                    </svg>
+                    <span>Okay</span>
+                  </div>
+                </label>
+
+                <label class="mood-btn-card">
+                  <input type="radio" name="mood" value="stressed">
+                  <div class="mood-btn-card-content">
+                    <svg class="mood-svg-icon" viewBox="0 0 24 24" aria-hidden="true">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <path d="M16 16s-1.5-2-4-2-4 2-4 2"></path>
+                      <line x1="9" y1="9" x2="9.01" y2="9"></line>
+                      <line x1="15" y1="9" x2="15.01" y2="9"></line>
+                    </svg>
+                    <span>Stressed</span>
+                  </div>
+                </label>
+
+                <label class="mood-btn-card">
+                  <input type="radio" name="mood" value="overwhelmed">
+                  <div class="mood-btn-card-content">
+                    <svg class="mood-svg-icon" viewBox="0 0 24 24" aria-hidden="true">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <path d="M16 16s-1.5-2.5-4-2.5-4 2.5-4 2.5"></path>
+                      <path d="M9 10c.5-.5 1.5-.5 2 0m2 0c.5-.5 1.5-.5 2 0"></path>
+                    </svg>
+                    <span>Overwhelmed</span>
+                  </div>
+                </label>
+              </div>
+            </div>
+
+            <!-- Journal Text Entry -->
+            <div class="form-group">
+              <label for="journal-entry">Write about your day (study progress, pressures, self-doubt, or general thoughts):</label>
+              <div class="journal-textarea-container">
+                <textarea id="journal-entry" class="form-textarea" placeholder="Today was tough. I feel like I'm falling behind on my NEET revision mock tests. I got anxious reading about other people's study hours..." required maxlength="2000" aria-describedby="error-journal-entry"></textarea>
+                <div class="textarea-char-counter error" id="char-counter">0 characters</div>
+              </div>
+              <span id="error-journal-entry" class="error-text-msg" role="alert">Please write at least 50 characters to start analysis.</span>
+            </div>
+
+            <div class="wizard-nav-btns" style="margin-top: var(--spacing-xl);">
+              <button type="submit" class="btn btn-primary" style="margin-left: auto;">Analyze Journal & Mood</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- Screen 4: Calming AI Processing Loader -->
+    <section id="screen-loader" class="screen" role="status" aria-live="polite" aria-busy="true">
+      <div class="loader-layout">
+        <!-- Calming expand/contract breathing spinner -->
+        <div class="breathing-bubble-container">
+          <div class="breathing-bubble-outer">
+            <div class="breathing-bubble-inner">
+              <div class="breathing-bubble-circle">Mind</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="breathing-label-text" id="loader-breathing-label">Breathe in slowly...</div>
+        
+        <p style="margin-bottom: var(--spacing-xl); color: var(--color-text-secondary);">
+          Our AI is scanning your logs to compile hidden triggers and coping plans. Please take this moment to follow the breathing guide.
+        </p>
+
+        <!-- Dynamic analysis status logs -->
+        <div class="logs-console-window">
+          <div class="logs-console-header">
+            <span class="console-dot"></span>
+            <span class="console-dot"></span>
+            <span class="console-dot"></span>
+            <span class="console-title">MindCare Sandbox Analyzer</span>
+          </div>
+          <div class="logs-console-body" id="console-logs-body">
+            <div class="console-log-line system">> Initializing analysis engines...</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Screen 5: Dashboard Insights & Empathetic Companion -->
+    <section id="screen-dashboard" class="screen" aria-labelledby="dashboard-heading">
+      <div class="dashboard-layout">
+        <!-- Header Banner -->
+        <div class="dashboard-banner-header">
+          <div class="dashboard-title-area">
+            <span id="dash-subtitle-meta" class="welcome-badge">Target Exam: JEE • Daily study: 8 hrs</span>
+            <h1 id="dashboard-heading">Academic Coping Dashboard</h1>
+          </div>
+          <div class="dashboard-action-buttons">
+            <button class="btn btn-outline" id="btn-copy-analysis" type="button">Copy Report</button>
+            <button class="btn btn-outline" id="btn-download-analysis" type="button">Download Report</button>
+            <button class="btn btn-primary" id="btn-dashboard-restart" type="button">Start Over</button>
+          </div>
+        </div>
+
+        <!-- Crisis Helpline (Safeguard Banner) -->
+        <div class="safeguard-banner" id="dash-crisis-banner" style="display: none;" role="alert">
+          <div class="safeguard-icon" aria-hidden="true">⚠️</div>
+          <div class="safeguard-content">
+            <h4>Empathetic Safeguard Reminder</h4>
+            <p>We notice you are carrying an extremely heavy mental load. Please remember you are not alone in this journey. If you feel overwhelmed, consider connecting with a wellness counselor, parent, or professional support hotlines:</p>
+            <div class="safeguard-links">
+              <a href="tel:14416" target="_blank">Tele-MANAS Student Support (India): Dial 14416</a>
+              <a href="https://www.vandrevalafoundation.com" target="_blank">Vandrevala Foundation Helpline</a>
+              <a href="tel:02227546669" target="_blank">Call 022-27546669</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Columns layout grid -->
+        <div class="dashboard-columns-grid">
+          <!-- Left Column: Insights analysis results -->
+          <div class="dashboard-card-section">
+            
+            <!-- Card 1: Stress Index & Triggers -->
+            <div class="feature-card">
+              <h3 style="margin-bottom: var(--spacing-md); border-bottom: 1px solid var(--color-border); padding-bottom: var(--spacing-sm);">
+                Emotional Stress Profile
+              </h3>
+              
+              <div class="stress-gauge-container">
+                <!-- Circular stress gauge graphic -->
+                <div class="stress-gauge-dial" id="dash-stress-gauge-meter" role="meter" aria-label="Stress Level Meter" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+                  <svg class="stress-gauge-svg" viewBox="0 0 140 140">
+                    <circle class="stress-gauge-track" cx="70" cy="70" r="60"></circle>
+                    <circle class="stress-gauge-fill" id="dash-stress-gauge-fill" cx="70" cy="70" r="60"></circle>
+                  </svg>
+                  <div class="stress-gauge-value-box">
+                    <span class="stress-gauge-num" id="dash-stress-score">0</span>
+                    <span class="stress-gauge-pct">Index</span>
+                  </div>
+                </div>
+
+                <div class="stress-gauge-info">
+                  <h4 class="stress-gauge-headline" id="dash-stress-headline">Stress Level: Analyzing</h4>
+                  <p id="dash-summary-text">Loading insights summary...</p>
+                </div>
+              </div>
+
+              <!-- Found Stress Triggers tags -->
+              <div class="trigger-tags-box">
+                <div class="trigger-tags-title">Identified Stress Triggers</div>
+                <div class="trigger-tags-list" id="dash-triggers-list">
+                  <span class="trigger-tag-pill">Academic Load</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Card 2: Personalized Coping Plan Checklist -->
+            <div class="feature-card">
+              <h3 style="margin-bottom: var(--spacing-sm);">Daily Coping Plan</h3>
+              <p style="margin-bottom: var(--spacing-md); font-size: 0.9rem; color: var(--color-text-secondary);">
+                AI-recommended steps to lower test anxiety and exam stress. Check off items as you practice them.
+              </p>
+              
+              <ul class="coping-checklist" id="dash-coping-checklist">
+                <!-- Dynamic checklist items -->
+              </ul>
+            </div>
+
+            <!-- Card 3: Adaptive Mindfulness Exercise Guide -->
+            <div class="feature-card mindful-corner-card">
+              <h3 style="margin-bottom: var(--spacing-xs);">Mindfulness Corner</h3>
+              <p style="margin-bottom: var(--spacing-md); font-size: 0.9rem; color: var(--color-text-secondary);">
+                Active 4-7-8 Breathing: Inhale (4s), Hold (7s), Exhale (8s). Calms the exam anxiety response.
+              </p>
+
+              <div class="breathing-exercise-container">
+                <div class="breathing-exercise-sphere" id="dash-breathing-sphere">
+                  <div class="breathing-sphere-inner">Breathe</div>
+                </div>
+                <div class="breathing-timer" id="dash-breathing-timer">0s</div>
+                <div class="breathing-guidance-instruction" id="dash-breathing-instruction">Click Start to begin 4-7-8 breathing.</div>
+                
+                <button type="button" class="btn btn-secondary" id="btn-toggle-breathing">
+                  Start Exercise
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Column: Conversational AI Companion Aura -->
+          <div class="dashboard-card-section">
+            <div class="feature-card chat-card" style="padding: 0; display: flex; flex-direction: column; overflow: hidden; height: 100%;">
+              <div class="chat-buddy-container">
+                
+                <!-- Chat header profile info -->
+                <div class="chat-buddy-header">
+                  <div class="chat-avatar" aria-hidden="true">✨</div>
+                  <div>
+                    <h3 style="font-size: 1.05rem;">Aura</h3>
+                    <div class="chat-avatar-status">
+                      <span class="typing-dot" style="display:inline-block; width: 6px; height: 6px; background-color: var(--color-success); border-radius: 50%; margin-right: 4px; animation: none;"></span> 
+                      Empathetic Wellness Companion
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Chat history viewport -->
+                <div class="chat-messages-viewport" id="dash-chat-messages" aria-label="Conversation History" role="log">
+                  <!-- Dynamic chat bubbles -->
+                </div>
+
+                <!-- Message input toolbar -->
+                <div class="chat-input-toolbar">
+                  <form id="dash-chat-form" novalidate>
+                    <input type="text" id="dash-chat-input" class="chat-input-field" placeholder="Talk to Aura..." required aria-label="Send a message to Aura">
+                    <button type="submit" class="btn btn-primary" style="padding: 0.5rem 1.25rem;">Send</button>
+                  </form>
+                </div>
+
+              </div>
+            </div>
+            
+            <!-- Encouragement card -->
+            <div class="feature-card" style="background: linear-gradient(135deg, var(--color-sage-light) 0%, var(--color-indigo-light) 100%); border-color: rgba(94, 84, 142, 0.15);">
+              <h4 style="font-family: var(--font-heading); margin-bottom: var(--spacing-xs); color: var(--color-text-secondary); text-transform: uppercase; font-size: 0.8rem; letter-spacing: 0.5px;">
+                Mindful Encouragement
+              </h4>
+              <p id="dash-encouragement-quote" style="font-style: italic; font-size: 1.05rem; color: var(--color-text-primary); font-weight: 500; line-height: 1.45;">
+                "Loading motivational thought..."
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Global Wiping settings button -->
+        <div style="text-align: center; margin-top: var(--spacing-xl);">
+          <button class="btn btn-outline" id="btn-global-reset" type="button" style="color: var(--color-danger); border-color: transparent;">
+            Reset All Cached Data & Clear Keys
+          </button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="app-footer">
+    <p>&copy; 2026 MindCare AI. Fully private student wellness dashboard. All data is processed client-side.</p>
+  </footer>
+
+  <!-- App Entry Script -->
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
